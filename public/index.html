@@ -29,7 +29,7 @@
 
 
 <meta name="generator" content="Hugo 0.147.7">
-  <title>My New Hugo Site</title>
+  <title>Networking &amp; DevOps</title>
   <link href="http://localhost:1313/" rel="canonical">
 
 
@@ -55,6 +55,15 @@
     
     
   
+    
+    
+    
+      
+      
+    
+    
+    
+  
 
 
   
@@ -62,6 +71,7 @@
 
 
 
+  
 </head>
 
 <body>
@@ -70,40 +80,14 @@
     <ul class="Banner">
       <li class="Banner-item Banner-item--title">
         
-          <a class="Banner-link u-clickable" href="/">My New Hugo Site</a>
+          <a class="Banner-link u-clickable" href="/">Networking &amp; DevOps</a>
         
       </li>
       
         
         
         <li class="Banner-item">
-          <a class="Banner-link u-clickable" href="/">About</a>
-        </li>
-      
-        
-        
-        <li class="Banner-item">
           <a class="Banner-link u-clickable" href="/">Posts</a>
-        </li>
-      
-        
-        
-        <li class="Banner-item">
-          <a class="Banner-link u-clickable" href="/tags/">Tags</a>
-        </li>
-      
-        
-        
-        <li class="Banner-item">
-          <a class="Banner-link u-clickable" href="/categories/">Categories</a>
-        </li>
-      
-        
-        
-          
-        
-        <li class="Banner-item">
-          <a class="Banner-link u-clickable" href="/feed.xml">RSS</a>
         </li>
       
     </ul>
@@ -119,15 +103,96 @@
     
     <header class="Heading">
   <h1 class="Heading-title">
-    <a class="Heading-link u-clickable" href="/" rel="bookmark">My New Hugo Site</a>
+    <a class="Heading-link u-clickable" href="/" rel="bookmark">Networking &amp; DevOps</a>
   </h1>
   
 </header>
-  
+<style>
+@media screen and (min-width: 769px) {
+	     
+	    .post-content input[type="checkbox"]:checked ~ label > img {
+		            transform: scale(1.6);
+			            cursor: zoom-out;
+				            position: relative;
+					            z-index: 999;
+						        }
+
+	        .post-content img.zoomCheck {
+			        transition: transform 0.15s ease;
+				        z-index: 999;
+					        cursor: zoom-in;
+						    }
+}
+</style>
 
   
 
   
+
+  
+  
+    <article>
+      
+      <header class="Heading">
+  <h2 class="Heading-title">
+    <a class="Heading-link u-clickable" href="/posts/devops-roadmap/" rel="bookmark">DevOps Roadmap</a>
+  </h2>
+  
+    
+      <time datetime="2025-06-17T08:10:12Z">June 17, 2025</time>
+    
+  
+</header>
+<style>
+@media screen and (min-width: 769px) {
+	     
+	    .post-content input[type="checkbox"]:checked ~ label > img {
+		            transform: scale(1.6);
+			            cursor: zoom-out;
+				            position: relative;
+					            z-index: 999;
+						        }
+
+	        .post-content img.zoomCheck {
+			        transition: transform 0.15s ease;
+				        z-index: 999;
+					        cursor: zoom-in;
+						    }
+}
+</style>
+
+      
+        
+          
+            <p>A friend recommended to me the DevOps roadmap - a learning journey to develop the various DevOps and Infrastructure skills that are in most demand.</p>
+<p><a href="https://github.com/milanm/DevOps-Roadmap">https://github.com/milanm/DevOps-Roadmap</a></p>
+<p>
+    
+	    <input type="checkbox" id="zoomCheck-63753" hidden>
+	        <label for="zoomCheck-63753">
+			        <img class="zoomCheck" loading="lazy" decoding="async" 
+								                  src="https://github.com/milanm/DevOps-Roadmap/blob/master/DevOps%20Roadmap.png?raw=true" alt="DevOps Journey" 
+														                  />
+				    </label>
+</p>
+
+          
+        
+      
+      
+
+  
+
+  
+
+
+
+
+
+    </article>
+    
+      <div class="Divider"></div>
+    
   
     <article>
       
@@ -141,6 +206,24 @@
     
   
 </header>
+<style>
+@media screen and (min-width: 769px) {
+	     
+	    .post-content input[type="checkbox"]:checked ~ label > img {
+		            transform: scale(1.6);
+			            cursor: zoom-out;
+				            position: relative;
+					            z-index: 999;
+						        }
+
+	        .post-content img.zoomCheck {
+			        transition: transform 0.15s ease;
+				        z-index: 999;
+					        cursor: zoom-in;
+						    }
+}
+</style>
+
       
         
           
@@ -152,6 +235,41 @@
   <a class="Heading-link u-clickable" href="/posts/my-first-post/#overview">Overview</a>
 </h2>
 <p>I wanted to set up a site that demonstrated my foray into DevOps skills, so as a project in and of itself, I&rsquo;ve created this platform as a challenge and demonstration of my infrastructure skills.</p>
+<p>
+    
+	    <input type="checkbox" id="zoomCheck-8b7f7" hidden>
+	        <label for="zoomCheck-8b7f7">
+			        <img class="zoomCheck" loading="lazy" decoding="async" 
+								                  src="/diagram.png" alt="Diagram of initial DevOps setup" 
+														                  />
+				    </label>
+</p>
+<ul>
+<li>
+<p>Hosted on a Free SKU Azure VM</p>
+</li>
+<li>
+<p>Uses GitHub for basic Version Controlling</p>
+</li>
+<li>
+<p>Uses my bendall.co domain to create a Dynamic DNS entry for &ldquo;devops.bendall.co&rdquo; using ddclient package</p>
+</li>
+<li>
+<p>VM is protected with a NSG to lockdown access for mgmt and web</p>
+</li>
+<li>
+<p>VM is secured with non-standard SSH port and public/private keys enabling secure and passwordless login</p>
+</li>
+<li>
+<p>NGINX is used as a reverse proxy for Hugo easy site builder (as I&rsquo;m terrible at front-end)</p>
+</li>
+<li>
+<p>Let&rsquo;s Encrypt TLS Certificate used instead of self-signed</p>
+</li>
+<li>
+<p>VSCode with Remote-SSH used for remote development; let&rsquo;s face it, no-one should be coding in a terminal these days</p>
+</li>
+</ul>
 
           
         

@@ -1,4 +1,7 @@
 baseURL = 'http://example.org/'
 languageCode = 'en-us'
-title = 'My New Hugo Site'
+title = 'Networking & DevOps'
 theme = 'hugo-flex'
+favicon = 'true'
+faviconVersion = "1"
+custom_js = ["js/medium-zoom.js"]
