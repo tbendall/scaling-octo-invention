@@ -4,4 +4,8 @@ title = 'Networking & DevOps'
 theme = 'hugo-flex'
 favicon = 'true'
 faviconVersion = "1"
-custom_js = ["js/medium-zoom.js"]
+custom_css = ["assets/css/custom.css"]
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

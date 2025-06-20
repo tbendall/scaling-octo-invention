@@ -23,14 +23,17 @@ I wanted to set up a site that demonstrated my foray into DevOps skills, so as a
 				    
 
 
-
 Hosted on a Free SKU Azure VM
-
-
 Uses GitHub for basic Version Controlling
+Uses my bendall.co domain to create a Dynamic DNS entry for &ldquo;devops.bendall.co&rdquo; using ddclient package
+VM is protected with a NSG to lockdown access for mgmt and web
+VM is secured with non-standard SSH port and public/private keys enabling secure and passwordless login
 
+NGINX is used as a reverse proxy for Hugo easy site builder (as I&rsquo;m terrible at front-end)
+Let&rsquo;s Encrypt TLS Certificate used instead of self-signed
 
-Uses my bendall.co domain to create a Dynamic DNS entry for &ldquo;devops.bendall.co&rdquo; using ddclient package">
+VSCode with Remote-SSH used for remote development; let&rsquo;s face it, no-one should be coding in a terminal these days
+">
   
 
 
@@ -67,6 +70,8 @@ Uses my bendall.co domain to create a Dynamic DNS entry for &ldquo;devops.bendal
 
 
   
+
+  
 </head>
 
 <body>
@@ -78,6 +83,12 @@ Uses my bendall.co domain to create a Dynamic DNS entry for &ldquo;devops.bendal
           <a class="Banner-link u-clickable" href="/">Networking &amp; DevOps</a>
         
       </li>
+      
+        
+        
+        <li class="Banner-item">
+          <a class="Banner-link u-clickable" href="/cv/">Experience</a>
+        </li>
       
         
         
@@ -141,30 +152,16 @@ Uses my bendall.co domain to create a Dynamic DNS entry for &ldquo;devops.bendal
 				    </label>
 </p>
 <ul>
-<li>
-<p>Hosted on a Free SKU Azure VM</p>
-</li>
-<li>
-<p>Uses GitHub for basic Version Controlling</p>
-</li>
-<li>
-<p>Uses my bendall.co domain to create a Dynamic DNS entry for &ldquo;devops.bendall.co&rdquo; using ddclient package</p>
-</li>
-<li>
-<p>VM is protected with a NSG to lockdown access for mgmt and web</p>
-</li>
-<li>
-<p>VM is secured with non-standard SSH port and public/private keys enabling secure and passwordless login</p>
-</li>
-<li>
-<p>NGINX is used as a reverse proxy for Hugo easy site builder (as I&rsquo;m terrible at front-end)</p>
-</li>
-<li>
-<p>Let&rsquo;s Encrypt TLS Certificate used instead of self-signed</p>
-</li>
-<li>
-<p>VSCode with Remote-SSH used for remote development; let&rsquo;s face it, no-one should be coding in a terminal these days</p>
-</li>
+<li>Hosted on a Free SKU Azure VM</li>
+<li>Uses GitHub for basic Version Controlling</li>
+<li>Uses my bendall.co domain to create a Dynamic DNS entry for &ldquo;devops.bendall.co&rdquo; using ddclient package</li>
+<li>VM is protected with a NSG to lockdown access for mgmt and web</li>
+<li>VM is secured with non-standard SSH port and public/private keys enabling secure and passwordless login</li>
+<li></li>
+<li>NGINX is used as a reverse proxy for Hugo easy site builder (as I&rsquo;m terrible at front-end)</li>
+<li>Let&rsquo;s Encrypt TLS Certificate used instead of self-signed</li>
+<li></li>
+<li>VSCode with Remote-SSH used for remote development; let&rsquo;s face it, no-one should be coding in a terminal these days</li>
 </ul>
 
   

@@ -7,6 +7,7 @@ body {
   min-height: 100svh;
   margin: 0;
   padding: 0;
+  max-width: 1000rem;
 }
 
 main {
@@ -62,6 +63,12 @@ kbd:has(kbd) {
 
 
   .Banner-item:nth-child(1) {
+    order: 2;
+  }
+
+
+
+  .Banner-item:nth-child(2) {
     order: 1;
   }
 
