@@ -63,12 +63,6 @@ kbd:has(kbd) {
 
 
   .Banner-item:nth-child(1) {
-    order: 2;
-  }
-
-
-
-  .Banner-item:nth-child(2) {
     order: 1;
   }
 
