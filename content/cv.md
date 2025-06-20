@@ -75,7 +75,7 @@ body {
     text-transform: uppercase;
     margin-bottom: 5px;
   }
-  
+   
   .first-name {
     font-weight: 700;
   }
