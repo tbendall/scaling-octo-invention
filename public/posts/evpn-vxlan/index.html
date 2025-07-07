@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+  <meta charset="utf-8">
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  
+    <meta name="description" content="As a bit of depature from DevOps skills, I&rsquo;ve been delving into EVPN-VXLAN; I&rsquo;ve done a design and implementation on EVPN-MPLS in my SP career, and thought it was time to look into EVPN and VXLAN.
+VXLAN is a L2 overlay technology that encapsulates L2 frames within a L4 UDP datagram. Interestingly, it&rsquo;s not an EoIP tunnelling protocol like GRE, but EoUDP.
+Arguably the biggest reason for this is because of the anticipated use case; VXLAN is designed to scale Data Centres, which would likely use multiple links and/or link aggregation. Having a L4 header visible to the underlay network allows a larger entropy for link aggregation hashing and ECMP.">
+  
+
+
+<meta name="color-scheme" content="light dark">
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.147.7">
+  <title>EVPN VXLAN | Networking &amp; DevOps</title>
+  <link href="http://localhost:1313/posts/evpn-vxlan/" rel="canonical">
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+    
+  
+  
+    <link href="/css/base.css" rel="stylesheet">
+
+
+
+  
+
+  
+</head>
+
+<body>
+  <nav class="u-background">
+  <div class="u-wrapper">
+    <ul class="Banner">
+      <li class="Banner-item Banner-item--title">
+        
+          <a class="Banner-link u-clickable" href="/">Networking &amp; DevOps</a>
+        
+      </li>
+      
+        
+        
+        <li class="Banner-item">
+          <a class="Banner-link u-clickable" href="/">Posts</a>
+        </li>
+      
+    </ul>
+  </div>
+</nav>
+
+  <main>
+    <div class="u-wrapper">
+      <div class="u-padding">
+        
+
+  
+  <header class="Heading">
+  <h1 class="Heading-title">
+    <a class="Heading-link u-clickable" href="/posts/evpn-vxlan/" rel="bookmark">EVPN VXLAN</a>
+  </h1>
+  
+    
+      <time datetime="2025-06-30T10:32:05Z">June 30, 2025</time>
+    
+  
+</header>
+<style>
+@media screen and (min-width: 769px) {
+	     
+	    .post-content input[type="checkbox"]:checked ~ label > img {
+		            transform: scale(1.6);
+			            cursor: zoom-out;
+				            position: relative;
+					            z-index: 999;
+						        }
+
+	        .post-content img.zoomCheck {
+			        transition: transform 0.15s ease;
+				        z-index: 999;
+					        cursor: zoom-in;
+						    }
+}
+</style>
+
+  <p>As a bit of depature from DevOps skills, I&rsquo;ve been delving into EVPN-VXLAN; I&rsquo;ve done a design and implementation on EVPN-MPLS in my SP career, and thought it was time to look into EVPN and VXLAN.</p>
+<p>VXLAN is a L2 overlay technology that encapsulates L2 frames within a L4 UDP datagram. Interestingly, it&rsquo;s not an EoIP tunnelling protocol like GRE, but EoUDP.</p>
+<p>Arguably the biggest reason for this is because of the anticipated use case; VXLAN is designed to scale Data Centres, which would likely use multiple links and/or link aggregation. Having a L4 header visible to the underlay network allows a larger entropy for link aggregation hashing and ECMP.</p>
+<p>VXLAN uses the concept of Virtual Network Identifiers (VNI) which can scale to around 16 million, compared to 4096 for single-tag VLANs.</p>
+<p>EVPN-VXLAN (as with EVPN-MPLS) brings the benefit of control-plane MAC learning, as well as efficient inter-subnet routing using Virtual Gateway Addressing and active-active multihoming, allowing the efficient use of multiple uplinks, again critical in high-traffic high-speed DC requirements.</p>
+<p>The best-practice deployment for DC networks is leaf-spine; each leaf is connected to every spine, keeping the &ldquo;traffic cost&rdquo; between any two leafs identical. This allows for predictable latency and failover times, as well as a redundant and resilient deployment.</p>
+<p>I used Arista switches to build a small lab to learn and demonstrate EVPN-VXLAN. The underlay is OSPF and MP-BGP with a vlan-aware bundle configured.</p>
+<ul>
+<li>A VLAN-aware bundle can map many VLANs to the same EVPN Routing Instance (EVI) - otherwise known as a <em>Virtual-Switch</em></li>
+<li>A VLAN-based service maps exactly one VLAN to one EVI - one EVPN per VLAN</li>
+</ul>
+<p>
+    
+	    <input type="checkbox" id="zoomCheck-ddde7" hidden>
+	        <label for="zoomCheck-ddde7">
+			        <img class="zoomCheck" loading="lazy" decoding="async" 
+								                  src="/EVPN-VXLAN-lab.png" alt="Arista EVPN-VXLAN Lab" 
+														                  />
+				    </label>
+</p>
+<p>I&rsquo;ve set the fabric up as a Centrally-Routed Bridging (CRB) Fabric; the L3 VXLAN Gatway is on the Spine device, and the leafs act as the L2 VXLAN Gateway.</p>
+<p>This is the preferred setup for North-South traffic patterns; traffic that will likely be egressing the fabric rather than East-West towards/from other devices intra-fabric.</p>
+<p>The linux servers send dot1Q-tagged traffic on VLAN10, with the leafs mapping VLAN10 to VNI 12345.</p>
+<p>Output of VLAN/VNI Mapping:</p>
+<pre><code>Leaf1#show vxlan vni
+VNI to VLAN Mapping for Vxlan1
+VNI         VLAN       Source       Interface       802.1Q Tag
+----------- ---------- ------------ --------------- ----------
+12345       10         static       Ethernet2       10        
+                                    Vxlan1          10     
+</code></pre>
+</br>
+<p>Output of BGP EVPN MAC-IP (Type-2) routes</p>
+<pre><code>Leaf1#show bgp evpn route-type mac-ip
+
+
+        Network                Next Hop              Metric  LocPref Weight  Path
+* &gt;     RD: 192.168.0.1:12 mac-ip 12345 5003.000a.0000
+                                -                     -       -       0       i
+* &gt;     RD: 192.168.0.3:12 mac-ip 12345 5003.000c.0000
+                                192.168.0.3           -       100     0       i Or-ID: 192.168.0.3 C-LST: 1.1.1.1 
+</code></pre>
+<p><b>Interestingly</b> with the comparison of CRB EVPN-VXLAN on JUNOS, there is a switch that enables the MAC-IP/ARP bindings to be advertised to <b>L2</b> VXLAN Gateways - this isn&rsquo;t usually the case as ARP bindings are sync&rsquo;d only with L3 VXLAN Gateways.</p>
+
+  
+
+  
+
+  
+
+
+
+
+
+  
+  
+
+
+
+      </div>
+    </div>
+  </main>
+  
+  <footer class="Footer">
+    <div class="u-wrapper">
+      <div class="u-padding u-noboosting">
+        Except where otherwise noted, content on this site is licensed under a &#32; <a href="http://creativecommons.org/licenses/by/4.0/" rel="license">Creative Commons Attribution 4.0 International License</a>.
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>
