@@ -164,6 +164,190 @@
       
       <header class="Heading">
   <h2 class="Heading-title">
+    <a class="Heading-link u-clickable" href="/posts/docker/" rel="bookmark">Docker Introduction</a>
+  </h2>
+  
+    
+      <time datetime="2025-08-13T14:05:54Z">August 13, 2025</time>
+    
+  
+</header>
+<style>
+@media screen and (min-width: 769px) {
+	     
+	    .post-content input[type="checkbox"]:checked ~ label > img {
+		            transform: scale(1.6);
+			            cursor: zoom-out;
+				            position: relative;
+					            z-index: 999;
+						        }
+
+	        .post-content img.zoomCheck {
+			        transition: transform 0.15s ease;
+				        z-index: 999;
+					        cursor: zoom-in;
+						    }
+}
+</style>
+
+      
+        
+          
+            <p>In the last few weeks I&rsquo;ve been learning and playing with Docker.</p>
+
+
+
+
+<h2 id="introduction">
+  <a class="Heading-link u-clickable" href="/posts/docker/#introduction">Introduction</a>
+</h2>
+<p>Docker is an open-source platform that enables you to build, ship and run applications in containers. A container is a lightweight and portable self-sufficient unit that includes:</p>
+<ul>
+<li>The application code</li>
+<li>Runtime</li>
+<li>System tools and libraries</li>
+<li>Settings</li>
+</ul>
+<p>The beauty of containers is that it doesn&rsquo;t matter what it runs on; the container could be running on Windows, Linux, a laptop, RasPi, or anything that can install Docker. As it&rsquo;s self sufficient, it&rsquo;s completely agnostic to the underlying OS/compute. It&rsquo;s another way to virtualise compute resources that isn&rsquo;t as heavy-handed as having to install a whole new Virtual Machine.</p>
+<p>
+    
+	    <input type="checkbox" id="zoomCheck-2e0f3" hidden>
+	        <label for="zoomCheck-2e0f3">
+			        <img class="zoomCheck" loading="lazy" decoding="async" 
+								                  src="/containers.avif" alt="Containers" 
+														                  />
+				    </label>
+</p>
+<p>One or many containers can run on a single host, virtualising the host&rsquo;s resources and creating separate runtimes for each container.</p>
+
+
+
+
+<h2 id="networking">
+  <a class="Heading-link u-clickable" href="/posts/docker/#networking">Networking</a>
+</h2>
+<p>Docker networking is most interesting to me for some reason, and there a few different options you can distribute and network containers.</p>
+<ul>
+<li>bridge (default): An isolated network for containers on a single host</li>
+<li>host: Shares the host’s network stack</li>
+<li>overlay: Enables multi-host networking (used in Docker Swarm)</li>
+<li>macvlan: Assigns MAC addresses to containers for direct LAN access</li>
+<li>none: No networking</li>
+</ul>
+<p>Overlay is the type that Docker swarm uses, and is used to link containers hosted on different hosts, for a more distributed deployment.</p>
+
+
+
+
+<h2 id="test-deployment">
+  <a class="Heading-link u-clickable" href="/posts/docker/#test-deployment">Test Deployment</a>
+</h2>
+<p>I followed a tutorial to spin up a NGINX reverse proxy which farms out requests to multiple flask servers. See diagram below.</p>
+<p>
+    
+	    <input type="checkbox" id="zoomCheck-d447d" hidden>
+	        <label for="zoomCheck-d447d">
+			        <img class="zoomCheck" loading="lazy" decoding="async" 
+								                  src="/Distributed_nginx.png" alt="Distributed Docker Lab" 
+														                  />
+				    </label>
+</p>
+<p>I used a simple docker compose YAML file to spin up both the NGINX and Flask app.py containers, allowing me to create a distributed infrastructure with one command.</p>
+<pre><code>docker-compose.yml 
+--
+version: '3'
+services:
+web:
+    build: ../flask_app
+web2:
+    build: ../flask_app
+nginx:
+    image: nginx:alpine
+    ports:
+    - 80:80
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+    - web
+    - web2
+</code></pre>
+<br>
+The nginx container takes a prepopulated nginx config file to create the reverse proxy, distributing the HTTP requests across both Flask servers.
+<pre><code># nginx.conf
+events {}
+http {
+    upstream app_servers {
+        server web:5000;
+        server web2:5000;
+    }
+    server {
+        listen 80;
+        location / {
+            proxy_pass http://app_servers;
+        }
+    }
+}
+</code></pre>
+<br>
+The Flask server hosts a simple Python that returns "Hello Docker!" and the hostname name of the container responding to the request:
+<pre><code>#!/usr/bin/python3
+
+# app.py
+from flask import Flask
+import socket
+app = Flask(__name__)
+@app.route('/')
+def home():
+    newstring = &quot;Hello, Docker! Hostname is {0}\n&quot;.format(socket.gethostname())
+
+    return newstring
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
+</code></pre>
+<br>
+<p>Sending multiple requests shows that Nginx is load balancing the requests across each Flask server:</p>
+<pre><code>root@mgmt-host:~/docker# curl localhost
+Hello, Docker! Hostname is d9bcfe1b35d0
+
+root@mgmt-host:~/docker# curl localhost
+Hello, Docker! Hostname is 36f88db2fc2b
+
+root@mgmt-host:~/docker# curl localhost
+Hello, Docker! Hostname is d9bcfe1b35d0
+
+root@mgmt-host:~/docker# curl localhost
+Hello, Docker! Hostname is 36f88db2fc2b
+
+root@mgmt-host:~/docker# curl localhost
+Hello, Docker! Hostname is d9bcfe1b35d0
+
+root@mgmt-host:~/docker# curl localhost
+Hello, Docker! Hostname is 36f88db2fc2b
+</code></pre>
+<p>Next steps is to create a truly distributed setup; using multiple different hosts to create a converged deployment!</p>
+
+          
+        
+      
+      
+
+  
+
+  
+
+
+
+
+
+    </article>
+    
+      <div class="Divider"></div>
+    
+  
+    <article>
+      
+      <header class="Heading">
+  <h2 class="Heading-title">
     <a class="Heading-link u-clickable" href="/posts/ansible/" rel="bookmark">Ansible</a>
   </h2>
   
@@ -217,102 +401,103 @@
 														                  />
 				    </label>
 </p>
-<p>Ansible obviously needs mgmt connectivity to the devices, it should fit in nicely along other network management resources which of course are <u>firewalled with 5-tuple rules, zoned approapriatly alongside same-trust-level resources, and only have strictly-controlled web-proxy-based outbound access to the Internet (if at all)</u></p>
-
-          
-        
-      
-      
-
-  
-
-  
-
-
-
-
-
-    </article>
-    
-      <div class="Divider"></div>
-    
-  
-    <article>
-      
-      <header class="Heading">
-  <h2 class="Heading-title">
-    <a class="Heading-link u-clickable" href="/posts/evpn-vxlan/" rel="bookmark">EVPN VXLAN</a>
-  </h2>
-  
-    
-      <time datetime="2025-06-30T10:32:05Z">June 30, 2025</time>
-    
-  
-</header>
-<style>
-@media screen and (min-width: 769px) {
-	     
-	    .post-content input[type="checkbox"]:checked ~ label > img {
-		            transform: scale(1.6);
-			            cursor: zoom-out;
-				            position: relative;
-					            z-index: 999;
-						        }
-
-	        .post-content img.zoomCheck {
-			        transition: transform 0.15s ease;
-				        z-index: 999;
-					        cursor: zoom-in;
-						    }
-}
-</style>
-
-      
-        
-          
-            <p>As a bit of depature from DevOps skills, I&rsquo;ve been delving into EVPN-VXLAN; I&rsquo;ve done a design and implementation on EVPN-MPLS in my SP career, and thought it was time to look into EVPN and VXLAN.</p>
-<p>VXLAN is a L2 overlay technology that encapsulates L2 frames within a L4 UDP datagram. Interestingly, it&rsquo;s not an EoIP tunnelling protocol like GRE, but EoUDP.</p>
-<p>Arguably the biggest reason for this is because of the anticipated use case; VXLAN is designed to scale Data Centres, which would likely use multiple links and/or link aggregation. Having a L4 header visible to the underlay network allows a larger entropy for link aggregation hashing and ECMP.</p>
-<p>VXLAN uses the concept of Virtual Network Identifiers (VNI) which can scale to around 16 million, compared to 4096 for single-tag VLANs.</p>
-<p>EVPN-VXLAN (as with EVPN-MPLS) brings the benefit of control-plane MAC learning, as well as efficient inter-subnet routing using Virtual Gateway Addressing and active-active multihoming, allowing the efficient use of multiple uplinks, again critical in high-traffic high-speed DC requirements.</p>
-<p>The best-practice deployment for DC networks is leaf-spine; each leaf is connected to every spine, keeping the &ldquo;traffic cost&rdquo; between any two leafs identical. This allows for predictable latency and failover times, as well as a redundant and resilient deployment.</p>
-<p>I used Arista switches to build a small lab to learn and demonstrate EVPN-VXLAN. The underlay is OSPF and MP-BGP with a vlan-aware bundle configured.</p>
+<p>Ansible obviously needs mgmt connectivity to the devices, it should fit in nicely along other network management resources which <b>of course are firewalled with 5-tuple rules, zoned approapriatly alongside same-trust-level resources, and only have strictly-controlled web-proxy-based outbound access to the Internet (if at all).</b></p>
+<p>My root Ansible directory contains a config file and 3 folders:</p>
+<pre><code>drwxr-xr-x   5 root root  4096 Jul  3 11:05 .
+drwxr-xr-x 101 root root  4096 Jul  7 13:44 ..
+-rw-r--r--   1 root root 40643 Jul  3 09:25 ansible.cfg
+drwxr-xr-x   3 root root  4096 Jul  7 13:44 inventory
+drwxr-xr-x   2 root root  4096 Jul  3 11:21 playbooks
+drwxr-xr-x   2 root root  4096 Jul  3 11:05 templates
+</code></pre>
+<br>
 <ul>
-<li>A VLAN-aware bundle can map many VLANs to the same EVPN Routing Instance (EVI) - otherwise known as a <em>Virtual-Switch</em></li>
-<li>A VLAN-based service maps exactly one VLAN to one EVI - one EVPN per VLAN</li>
+<li>Inventory - this is where you define and organise your remote systems</li>
+<li>Playbooks - playbooks are files that contain instructions and tasks to acheive the device management and configuration</li>
+<li>Templates - if using JinJa2 in playbooks, this is where the device configuration templates are stored ready for access by the playbook</li>
 </ul>
-<p>
-    
-	    <input type="checkbox" id="zoomCheck-ddde7" hidden>
-	        <label for="zoomCheck-ddde7">
-			        <img class="zoomCheck" loading="lazy" decoding="async" 
-								                  src="/EVPN-VXLAN-lab.png" alt="Arista EVPN-VXLAN Lab" 
-														                  />
-				    </label>
-</p>
-<p>I&rsquo;ve set the fabric up as a Centrally-Routed Bridging (CRB) Fabric; the L3 VXLAN Gatway is on the Spine device, and the leafs act as the L2 VXLAN Gateway.</p>
-<p>This is the preferred setup for North-South traffic patterns; traffic that will likely be egressing the fabric rather than East-West towards/from other devices intra-fabric.</p>
-<p>The linux servers send dot1Q-tagged traffic on VLAN10, with the leafs mapping VLAN10 to VNI 12345.</p>
-<p>Output of VLAN/VNI Mapping:</p>
-<pre><code>Leaf1#show vxlan vni
-VNI to VLAN Mapping for Vxlan1
-VNI         VLAN       Source       Interface       802.1Q Tag
------------ ---------- ------------ --------------- ----------
-12345       10         static       Ethernet2       10        
-                                    Vxlan1          10     
-</code></pre>
-</br>
-<p>Output of BGP EVPN MAC-IP (Type-2) routes</p>
-<pre><code>Leaf1#show bgp evpn route-type mac-ip
+<h2>Inventory</h2>
+<p>The inventory can be organised in various different ways; I organise by device vendor and/or CLI language so I can easily apply playbooks to the whole vendor estate</p>
+<pre><code>root@mgmt-host:/etc/ansible/inventory# ls
+arista
 
-
-        Network                Next Hop              Metric  LocPref Weight  Path
-* &gt;     RD: 192.168.0.1:12 mac-ip 12345 5003.000a.0000
-                                -                     -       -       0       i
-* &gt;     RD: 192.168.0.3:12 mac-ip 12345 5003.000c.0000
-                                192.168.0.3           -       100     0       i Or-ID: 192.168.0.3 C-LST: 1.1.1.1 
+root@mgmt-host:/etc/ansible/inventory# cd arista/
+root@mgmt-host:/etc/ansible/inventory/arista# ls
+hosts.yaml  host_vars
 </code></pre>
-<p><b>Interestingly</b> with the comparison of CRB EVPN-VXLAN on JUNOS, there is a switch that enables the MAC-IP/ARP bindings to be advertised to <b>L2</b> VXLAN Gateways - this isn&rsquo;t usually the case as ARP bindings are sync&rsquo;d only with L3 VXLAN Gateways.</p>
+<br>
+<p>Hosts.yaml is the inventory file where the devices are listed and organised into groups. &ldquo;All&rdquo; contains all the devices in this file, but you can use &ldquo;children&rdquo; to organise into arbitrary groups</p>
+<pre><code>root@mgmt-host:/etc/ansible/inventory/arista# cat hosts.yaml
+all:
+hosts:
+    leaf1:
+    leaf2:
+    spine1:
+children:
+    leafs:
+    leaf1:
+    leaf2:
+    spines:
+    spine1:
+vars:
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_network_os: arista.eos.eos
+</code></pre>
+<br>
+<p>&ldquo;vars&rdquo; contains variables common to the specific groups; here I&rsquo;ve listed vars under &ldquo;all&rdquo; to apply to all the hosts in the inventory file.</p>
+<pre><code>root@mgmt-host:/etc/ansible/inventory/arista# cd host_vars/
+root@mgmt-host:/etc/ansible/inventory/arista/host_vars# ls
+leaf1.yaml  leaf2.yaml  spine1.yaml
+</code></pre>
+<br>
+<p>&ldquo;host-vars&rdquo; contains files that allow arbitrary per-device variables; here I&rsquo;ve defined hostname and vtep_ip. These can be accessed in the Jinja2 templating module</p>
+<pre><code>root@mgmt-host:/etc/ansible/inventory/arista/host_vars# cat leaf1.yaml
+hostname: leaf1
+vtep_ip: 10.0.0.1
+</code></pre>
+<br>
+<h2>Playbooks</h2>
+<p>Playbooks are lists of tasks and actions to perform on the remote devices. They are YAML files, and can have 1 or many tasks.</p>
+<p>Ansible content collections can add content not included in the Ansible &ldquo;core&rdquo;. They are a way to add vendor or other content without building it directly into Ansible.</p>
+<p>The Arista EOS collection is called &ldquo;arista.eos&rdquo; - there are many modules in the collection, including an arbitrary CLI and HTTP API module.</p>
+<p><a href="https://docs.ansible.com/ansible/latest/collections/arista/eos/index.html">Ansible Arista EOS Collection</a></p>
+<p>See an example of a Playbook below, updating all the management interface descriptions:</p>
+<pre><code>---
+
+- name: Configure interface descriptions
+hosts: all
+gather_facts: false
+
+tasks:
+
+    - name: Add interface desc
+    arista.eos.eos_interfaces:
+        config:
+        - name: Management1
+            description: &quot;configured by Ansible&quot;
+        state: merged
+    become: true
+</code></pre>
+<br>
+<p>When the playbook is run against the &ldquo;arista&rdquo; inventory, you get an output based of the Playbook&rsquo;s success</p>
+<pre><code>root@mgmt-host:/etc/ansible# ansible-playbook playbooks/pb_interface_desc.yaml -i inventory/arista  -uadmin
+
+PLAY [Configure interface descriptions] ***********************************************************************************************************
+
+TASK [Add interface desc] *************************************************************************************************************************
+changed: [leaf1]
+changed: [spine1]
+changed: [leaf2]
+
+PLAY RECAP ****************************************************************************************************************************************
+leaf1                      : ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+leaf2                      : ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+spine1                     : ok=1    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+root@mgmt-host:/etc/ansible#
+</code></pre>
+<h2>Summary</h2>
+<p>There&rsquo;s lots to unpack, but this is what&rsquo;s meant as &ldquo;infrastructure as code&rdquo;; an entire network can be managed and maintained purely by building inventories and playbooks. Once you&rsquo;ve got to grips with host_vars, the size of the network almost becomes irrelevant.</p>
 
           
         
